@@ -1,0 +1,223 @@
+\documentclass{article}
+\usepackage{amsmath,amsfonts,amsthm,amssymb}
+\usepackage{siunitx}
+\usepackage{graphicx,float,wrapfig}
+\usepackage{cite}
+
+\author{Guilherme Nettesheim}
+\title{Modeling bacterial growth}
+
+\graphicspath{ {../images/} }
+
+\begin{document}
+\maketitle
+
+\section{Observables}
+
+Each cell can be described by several parameters, or observables, given by
+
+\begin{itemize}
+	\item Time since ``birth,'' or division, $t$
+	\item The growth rate, in units of inverse time, $\alpha$
+	\item Its volume, or size, $V$
+	\item Its initial volume, or initial size, $V_0$
+\end{itemize}
+
+These four variables are, however, redundant, since we also have an ``equation of state'' given by:
+
+\begin{align} \label{eqOfState}
+V(t) = V_0 e^{\alpha t}
+\end{align}
+
+which comes from the observation of exponential growth for individual, as well as populations. Therefore, the state is three-dimensional, and any three of these four coordinates are sufficient to describe the state of a particular cell. We will refer to this three-dimensional space as $\Sigma$.
+
+
+\section{Division probability}
+
+We are interested in knowing when a cell divides. Division is seen as a stochastic event, the probability of which depends on the state of the cell. We will now deal with some basic definitions and identities. I have changed a lot of the symbols used in the literature.\\
+
+The probability of dividing at a certain point $q \in \Sigma$ will be denoted $P(q)$. Generally, we will be dealing with explicit coordinates. For example, the probability of dividing at time $t$, given a growth-rate $\alpha$ and an initial volume $V_0$ will be denoted $P(t \mid \alpha, V_0)$, and so on.\\
+
+Another way to express the same idea is through the \emph{survival function}, defined as the probability that the cell has ``not yet divided.'' This, of course, assumes an ordering, so we will really only use this for conditional probabilities with time or volume as the single coordinates. This is denoted $S(t \mid \alpha, V_0)$, for example\footnote{In \cite{Kennard2016}, this is denoted $P_0$ instead of $S$}. The survival function and probability distributions are related by:
+
+\begin{align}
+P(t \mid \alpha, V_0) &= - \dot{S}(t \mid \alpha, V_0)\\
+\nonumber\\
+S(t \mid \alpha, V_0) &= \int_t^\infty \, P(\tau \mid \alpha, V_0) \, d\tau 
+\end{align}
+
+We can express either of these through a \emph{hazard function}. The hazard function is defined through:\footnote{While \cite{Kennard2016} also use $h$ for hazard functions, they explicitely write $h_d$ to denote hazard function for division, which I find redundant. Also, they use a star to denote the hazard function in different coordinate systems, which we do not do.}
+
+\begin{align}
+\dot{S}(t \mid \alpha, V_0) = -h(t \mid \alpha, V_0) \cdot (t \mid \alpha, V_0)
+\end{align}
+
+and likewise for $V$ as the coordinate.\\
+
+This can be solved by
+
+\begin{align}
+S(t \mid \alpha, V_0) = \exp \left(- \int_0^t \, h(\tau \mid \alpha, V_0) \, d\tau \right)\\
+\nonumber\\
+P(t \mid \alpha, V_0) = h(t \mid \alpha, V_0) \cdot \exp \left(- \int_0^t \, h(\tau \mid \alpha, V_0) \, d\tau \right) \label{eqHazard}
+\end{align}
+
+A quick clarification: Unfortunately, both the hazard function and the probability distribution are often refered to as the probability of division. What is the difference?  $P(t \mid \alpha, V_0)\, dt$ is the probability of dividing in the interval $[t, t + dt]$, and no sooner. If 100 cells are born at $t = 0$, and 50 of then divide at $t$ (others perhaps have divided earlier, or have not yet divided), then $P(t \mid \alpha, V_0) \approx 50$. If 50\% of the \emph{remaining}, undivided cells divide at $t$, then $h(t \mid \alpha, V_0) \approx 50$.
+
+\section{Steady growth distribution}
+
+So far we have been only describing one cell, and the idea of dividing abstractly.\\
+
+A cell is ``born'' at time $t$, with initial volume $V_0$, and growth rate $\alpha$. It will grow, according to the equation of state (\ref{eqOfState}), and at a certain time $t_f$ (or, equivalently, volume $V_f$), will divide. The point at which it divides is stochastic, and controlled by the hazard function.\\
+
+Division will create two new cells, however. Let us pick just one of these. What do we know about its inital parameters? It might have a different growth rate, $\alpha^\prime$, but we cannot say how it depends on its progenitor's growth rate. However, we can say confidently that its initial volume will be half of the final volume,
+
+\begin{align}
+V_0^\prime = \frac{1}{2}V_f
+\end{align}
+
+Thus, the initial volume of a daughter cell is a \emph{deterministic} function of the final volume of the mother cell, but because the final volume of the mother cell is a stochastic function of the mother cell's initial volume, \emph{the daughter cell's initial volume is a stochastic function of the mother cell's initial volume}.\\
+
+We can imagine a long family line of growth and division, tracking only the initial size:
+
+\begin{align}
+V_0^{(1)} \to V_0^{(2)} \to \dots \to V_0^{(N)}
+\end{align}
+
+How does one initial size propagate to the next generation? Assume we have a cell with initial volume $V_0$. What is the probability that its descendants will have volume $V_0^\prime$? It is the probability that the cell will divide at $V = 2 V_0^\prime$. Thus, the propagator is $P(V = 2 V_0^\prime \mid \alpha, V_0)$.\\
+
+Now let $\rho(V_0)$ be the probability distribution of initial volume of the $N^\text{th}$ generation. The probability distribution of initial volume of the $(N+1)^\text{th}$ will be given by: \footnote{I am having trouble elegantly describing where this ``two'' normalizing constant comes from. It's obviously ``two'' because division is a splitting into ``two.'' It is not a Jacobian, as far as I can tell. In any case, I'll come back to this \dots }
+
+\begin{align}
+\rho^\prime (V_0^\prime \mid \alpha) = 2\int_0^\infty \, P(V = 2 V_0^\prime \mid \alpha, V_0) \cdot \rho(V_0 \mid \alpha) \, d V_0
+\end{align}
+
+We now make an additional requirement: A steady state. We assume that the distribution of sizes does not change with subsequent generation, so that
+
+\begin{align} \label{eqSteadyState}
+\rho (V_0^\prime\mid \alpha) = 2\int_0^\infty \, P(V = 2 V_0^\prime \mid \alpha, V_0) \cdot \rho(V_0 \mid \alpha) \, d V_0
+\end{align}
+
+Note that the only thing that has changed is that the first $\rho$ has lost its prime, so that the two functions $\rho$ are now the same on both sides. This is a condition on $\rho$, which we will use in subsequent sections.
+
+\section{Scaling assumptions}
+
+We will now impose certain scaling assumptions, based on experimental results, and follow their consequences.\\
+
+\subsection{Distribution of $V_0$ scales}
+
+The first observation\cite{Kennard2016} is that the distribution of initial volumes of \emph{E. coli} cells varies across different media and conditions. However, when ``rescaled,'' all of these distributions have the same shape:
+
+\begin{center}
+\includegraphics[scale = 0.8]{eColiGrowthRescaling.png}
+\end{center}
+
+Now let us translate this into our mathematical language. Let $\langle V_0 \rangle_\alpha$ be the mean of $V_0$, taken over the distribution $\rho(V_0 \mid \alpha)$. Then
+
+\begin{align}
+\langle V_0 \rangle_\alpha \cdot \rho\left( \langle V_0 \rangle_\alpha \cdot x \mid  \alpha\right) = \langle V_0 \rangle_\beta \cdot \rho \left( \langle V_0 \rangle_\beta \cdot x \mid  \beta \right)
+\end{align}
+
+That is, if we take a dimensionless number $x$, multiply it by the mean of a distribution, and then rescale the distribution by the Jacobian (to keep the distribution normalized), this should give the same answer, regardless of the distribution (i.e., regardless of the growth rate, $\alpha$ or $\beta$). This rescaled function is therefore ``universal,'' and we will call it $R$:
+
+\begin{align}
+R(x) \equiv \langle V_0 \rangle_\alpha \cdot \rho\left( \langle V_0 \rangle_\alpha \cdot x \mid  \alpha\right)
+\end{align}
+
+for any choice of $\alpha$.\\
+
+I'd now like to rewrite the above in a different format, to make the road ahead easier. Let $\sigma_c (x) = c\cdot x$ be the function which scales a variables by a constant $c$. Then the above relation can be written
+
+\begin{align}
+R = \sigma_{\langle V_0 \rangle_\alpha} \circ \rho \circ \sigma_{\langle V_0 \rangle_\alpha}
+\end{align}
+
+or, more illustratively, 
+
+\begin{align}
+R = \left( \sigma_{\langle V_0 \rangle_\alpha} \right)^\prime \cdot (\rho \circ \sigma_{\langle V_0 \rangle_\alpha})
+\end{align}
+
+where we have written the final scaling as a Jacobian, since that is its role. Inverting the above, we have
+
+\begin{align}
+\rho(V_0 \mid \alpha) = \left(\sigma^{-1}_{\langle V_0 \rangle_\alpha}\right)^{\prime} \cdot \left( R \circ \sigma_{\langle V_0 \rangle_\alpha}^{-1} \right) (V_0)
+\end{align}
+
+\subsection{Probability of division is universal}
+
+Now let us use this identity, which is equivalent to the scaling condition on the distribution of initial volumes, and let us put it into the steady state equation (\ref{eqSteadyState}), to get
+
+\begin{align}
+\left(\sigma^{-1}_{\langle V_0 \rangle_\alpha}\right)^{\prime} \cdot \left( R \circ \sigma_{\langle V_0 \rangle_\alpha}^{-1} \right) (V_0) &= 2 \int_0^\infty\, \left(\sigma^{-1}_{\langle V_0 \rangle_\alpha}\right)^{\prime} \cdot \left( R \circ \sigma_{\langle V_0 \rangle_\alpha}^{-1} \right) (V_0^\prime) \cdot P(2V_0 \mid \alpha, V_0^\prime) \, d V_0^\prime\\
+\nonumber\\
+&= 2 \int_0^\infty\,  \left(\sigma^{-1}_{\langle V_0 \rangle_\alpha}\right)^{\prime} \cdot \left( R \circ \sigma_{\langle V_0 \rangle_\alpha}^{-1} \right) (V_0^\prime) \cdot P(2V_0 \mid \alpha, (\sigma_{\langle V_0 \rangle_\alpha} \circ \sigma_{\langle V_0 \rangle_\alpha}^{-1}) (V_0^\prime) ) \, d V_0^\prime\\
+\nonumber\\
+&= 2 \int_0^\infty\, R(x^\prime) \cdot P(2V_0 \mid \alpha, \sigma_{\langle V_0 \rangle_\alpha}  (x^\prime) ) \, d x^\prime\\
+\nonumber\\
+\left(\sigma^{-1}_{\langle V_0 \rangle_\alpha}\right)^{\prime} \cdot \left( R \circ \sigma_{\langle V_0 \rangle_\alpha}^{-1} \right) (V_0) &= 2 \int_0^\infty\, R(x^\prime) \cdot P(2V_0 \mid \alpha, \sigma_{\langle V_0 \rangle_\alpha}  (x^\prime) ) \, d x^\prime\\
+\nonumber\\
+\left( R \circ \sigma_{\langle V_0 \rangle_\alpha}^{-1} \right) (V_0) &= 2 \int_0^\infty\, R(x^\prime) \cdot \left(\sigma_{\langle V_0 \rangle_\alpha}\right)^{\prime} \cdot P(2V_0 \mid \alpha,\sigma_{\langle V_0 \rangle_\alpha}  (x^\prime) ) \, d x^\prime\\
+\nonumber\\
+R(x) &= 2 \int_0^\infty\, R(x^\prime) \cdot \left(\sigma_{\langle V_0 \rangle_\alpha}\right)^{\prime} \cdot P(2 \sigma_{\langle V_0 \rangle_\alpha}(x) \mid \alpha, \sigma_{\langle V_0 \rangle_\alpha}  (x^\prime) ) \, d x^\prime\\
+\nonumber\\
+R(x) &= 2 \int_0^\infty\, R(x^\prime) \cdot  Q(2 x \mid \alpha, x^\prime ) \, d x^\prime
+\end{align}
+
+What has this tedious exercise in change of variables brought us? The fact that the last equation has an alpha dependency on the right-hand-side only. Therefore, $Q$ does not depend on $\alpha$, and is similarly, a universal function:
+
+\begin{align}
+Q(2 x \mid \alpha, x^\prime ) \equiv Q(2 x \mid x^\prime )
+\end{align}
+
+In other words, the probability of a cell of original volume $V_0$, with growth-rate $\alpha$, dividing at volume $V$, only depends on the ratio of $V_0$ to the mean initial volume, and the ratio of $V$ to the mean initial volume.
+
+\subsection{Constraint for hazard function}
+
+We've now shown the requirement of steady growth and scaling has led to a simplification of the functional form of the probability of dividing. This must also propagate to a condition on the hazard function.\\
+
+From equation (\ref{eqHazard}) and the universality of $P$, we can write:\\
+
+\begin{align}
+h(V \mid V_0) &= - \frac{d}{dV} \log \int^{\infty}_{V} \, P(V^\prime \mid \alpha, V_0) \, dV^\prime\\ 
+\nonumber \\
+&= - \frac{d}{dV} \log \int^{\infty}_{V} \, Q( \sigma_{\langle V_0 \rangle_\alpha}^{-1}(V^\prime) \mid \sigma_{\langle V_0 \rangle_\alpha}^{-1}(V_0) ) \, dV^\prime\\ 
+\nonumber \\
+&= - \frac{d}{dV} \log \, \langle V_0 \rangle_\alpha \cdot \int^{\sigma_{\langle V_0 \rangle_\alpha}^{-1}(\infty)}_{\sigma_{\langle V_0 \rangle_\alpha}^{-1}(V)} \, Q( \sigma_{\langle V_0 \rangle_\alpha}^{-1}(V^\prime) \mid \sigma_{\langle V_0 \rangle_\alpha}^{-1}(V_0) ) \, dV^\prime\\ 
+\nonumber \\
+&= - \frac{d}{dV} \log \int^{\infty}_{\sigma_{\langle V_0 \rangle_\alpha}^{-1}(V)} \, Q( x^\prime \mid \sigma_{\langle V_0 \rangle_\alpha}^{-1}(V_0) ) \, dx^\prime\\ 
+\nonumber \\
+&= - \frac{1}{\langle V_0 \rangle_\alpha} \frac{d}{dx} \left. \log \int^{\infty}_{x} \, Q( x^\prime \mid \sigma_{\langle V_0 \rangle_\alpha}^{-1}(V_0) ) \, dx^\prime \right|_{x = \sigma_{\langle V_0 \rangle_\alpha}^{-1} (V)}
+\end{align}
+
+We now note that other than the first factor, the right-hand-side, again, is a dimensionless, universal function of volumes scaled by the mean, initial volumes. That is, for
+
+\begin{align}
+\frac{1}{\langle V_0 \rangle_\alpha} f(x, x_0) \equiv -  \frac{d}{dx} \log \int^{\infty}_{x} \, Q( x^\prime \mid x_0 ) \, dx^\prime  
+\end{align}
+
+we have
+
+\begin{align}
+h(V \mid V_0) &= \frac{1}{\langle V_0 \rangle_\alpha} \cdot f\left( \sigma_{\langle V_0 \rangle_\alpha}^{-1}(V) \mid \sigma_{\langle V_0 \rangle_\alpha}^{-1}(V_0) \right)
+\end{align}
+
+\subsection{Summary}
+
+To summarize:
+
+\begin{itemize}
+	\item The distribution of initial volumes, $\rho(V_0 \mid \alpha)$ is observed to scale.
+	\item Requiring that $\rho(V_0 \mid \alpha)$ scale shows that there is a universal initial volume distribution, $R(x)$.
+	\item The existence of a universal distribution $R$, along with the requirement of steady growth, shows that there is a universal probability distribution $Q(x^\prime \mid x)$, which is independent of $\alpha$. 
+\end{itemize}
+
+\section{Questions}
+
+Factor of two in propagator
+
+How does alpha change? Cell by cell? With time within a particular cell? I was sloppy with how I treated $\alpha$ in above sections
+
+\bibliography{mybib}{}
+\bibliographystyle{plain}
+\end{document}

@@ -1,0 +1,91 @@
+\documentclass{article}
+\usepackage{amsmath,amsfonts,amsthm,amssymb}
+\usepackage{siunitx}
+\usepackage{graphicx,float,wrapfig}
+\usepackage{cite}
+
+\author{Guilherme Nettesheim}
+\title{Malaria Journal}
+
+\graphicspath{ {../images/} }
+
+\begin{document}
+\maketitle
+
+%We will ignore the complexities of the malaria life cycle, focusing on its interaction with red blood cells, or \emph{erythrocytes}\cite{Crick2014a}.
+%\includegraphics{malariaBloodCycle}
+
+\section{Invasion}
+
+The invasion process works as follows:
+
+\begin{itemize}
+	\item The merozoite diffuses to the erythrocyte
+	\item The merozoite binds reversibly to the erythrocite
+	\item The merozoite reorients itself, so its apical end (the sharp end) points into the erythrocyte membrane.
+	\item A ``tight junction'' is formed between the merezoite and the erythrocye, moving from the apical to the posterior end. As this happens, the merezoite sheds its coating.
+	\item The merezoite forms a ``parasitophorous vacuoule'', isolating itself from the erythrocyte cytoplasm
+\end{itemize}
+
+\includegraphics[scale=0.3]{QiagenInvasion.jpg}
+
+Let's go over each part:
+
+\subsection{Contact}
+
+The first thing the merozoite must do is diffuse to the erythrocyte. This diffusional process seems straightforward, and little discussed.\\
+
+The merozoite interacts with the erythrocite. ``It appears to be a reversible and relatively long-distance adherence''\cite{Crick2014a}, but I am not sure what the exact dynamics are. This interction also does not depend on the orientation of the merozoite.\\
+
+The interaction is thought to be due to an interaction between one or more merozoite surface coatproteins (MSPs), or peripheral proteins bound to these. A candidate, MSP-1, was thought to be required for binding, but this turned out to not be so, and as of 2017, ``it is unclear which, if any, of the MSPs play a role in the initial phase of invasion''\cite{Cowman2017}.\\
+
+
+\subsection{Deformation}
+
+%\sout{Following, or simultaneous, with alignment, is the deformation of the erythrocyte membrane. The causality is not clear: Does the deformation of the membrane help the merozoite align itself, does the alignment cause the deformation, or are these two proceses not coupled?}\\
+%
+%\sout{It is also not clear how the deformation is achieved, or who the actor is: Is the erythrocyte a passive actor, and its membrane is deformed by a force enacted by the merozoite, or does the erythrocyte, in response to some merozoite-induced signal, actively deform its own membrane?}\\
+
+\subsection{Alignment}
+
+Next, the merozoite must align itself. Egg-shaped, its ``sharp,'' apical end contains its ``payload'': A set of secretory organelles called rhoptries, micronemes, and dense granules. The merozoite must, therefore, roll and turn so that its apical end points into the erythrocyte membrane.\\
+
+As far as I can tell, this process is very poorly understood. A protein PfAMA-1 (\emph{Plasmodium falciparum} apical membrane antigen 1) was identified by Mitchell in 2004 to be necessary for reorientation\cite{Mitchell2004}, but that's about it.
+
+\subsection{Junction}
+
+Following alignment and deformation, the merozoite forms a ``tight junction'' with the erythrocyte, in contrast to the previous, ``loose junction.''\\
+
+Again, the theory is that proteins secreted by the micronemes and rhoptries lead to the adhesion, in a ``calcium dependent process,'' though I'm not sure what this means\cite{Crick2014a}.\\
+
+These adhesins (so named because they lead to adhesion) ``haven't been definitively identified'' but candidates have been found. These candidates bind to specific receptors on the erythrocyte, and, interestingly, they are redundant. None of the candidates are necessary, and multiple redundant ``pathways'' are used. This is likely a way to deal with the ``highly heterogenous'' erythrocyte surfaces, and to get around immunity.\\
+
+\subsection{Internalisation}
+
+\section{Growth and egress}
+
+The latest paper on growth and egress is \cite{Park2018}. They track the time between burst cycles for synchronous and asynchronous infected erythrocytes, but they keep track of lineage of each cell as well. Their results are not very interesting, and their methodology is limited:
+
+\begin{enumerate}
+	\item They adhere the erythrocytes to the surface using Concanavalin A
+	\item They do not seem to flow or exchange medium. Over the 80 hours they observed, this will lead to toxicity issues.
+	\item They analyze everything by hand. This will not scale.
+	\item Their methodology is very simple. Essentially, they calculate the variation of egress-to-egress times for siblings and altogether, and remark that the latter is higher.
+\end{enumerate}
+
+Imaging was done with:
+
+\begin{enumerate}
+	\item Strain 3D7HT-GFP
+	\item a DeltaVision Elite Microscope
+	\item 60x/1.25 NA phase-contrast oil object
+	\item Acquisition at 10 MHz
+	\item 10 ms exposure time for illumination
+	\item 25 ms exposure time for fluorescence
+	\item Images collected every 6 minutes, 40-50 different positions
+	\item DeltaVision UltimateFocus
+\end{enumerate}
+
+\bibliography{mybib}{}
+\bibliographystyle{plain}
+\end{document}
